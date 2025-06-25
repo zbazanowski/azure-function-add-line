@@ -72,7 +72,7 @@ echo "first line" > "$MYFILE"
 #
 # Upload a file
 #
-MYFILE="./${TMPFILES}/bazfile04.txt"
+MYFILE="./${TMPFILES}/bazfile05.txt"
 az storage blob upload \
   --account-name $storage \
   --container-name $container_uploads \
