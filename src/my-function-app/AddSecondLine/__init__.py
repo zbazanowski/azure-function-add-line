@@ -24,3 +24,4 @@ def main(myblob: InputStream):
 
     # Upload modified content
     blob_client.upload_blob(modified_content, overwrite=True)
+
