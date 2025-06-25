@@ -1,0 +1,31 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Local env
+.env
+.venv/
+env/
+venv/
+ENV/
+
+# VS Code
+.vscode/
+
+# Mac system files
+.DS_Store
+
+# Function artifacts
+.local/
+bin/
+obj/
+
+# Azure Functions local settings
+local.settings.json
+
+# Python packaging
+*.egg-info/
+dist/
+build/
+.eggs/
