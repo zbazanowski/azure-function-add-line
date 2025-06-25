@@ -1,0 +1,145 @@
+location="westeurope"
+rg="function-sandbox"
+storage="bazstorageacc"
+container_uploads="bazcontaineruploads"
+container_processed="bazcontainerprocessed"
+
+functionapp="bazfunctionapp"
+bazfunction="AddSecondLine"
+
+TMPFILES=tmpfiles
+MYFILE="./${TMPFILES}/bazfile01.txt"
+
+my_home_ip="178.17.3.8"
+
+az group create -n $rg -l $location
+
+az storage account create -g $rg -n $storage \
+-l $location \
+--sku Standard_LRS \
+--min-tls-version TLS1_2 \
+--https-only false
+
+az storage account show -n $storage -g $rg --query networkRuleSet
+
+az storage account show-connection-string \
+  --resource-group $rg \
+  --name $storage \
+  --output tsv
+
+az storage account update \
+  --name $storage\
+  --resource-group $rg \
+  --allow-blob-public-access true
+
+
+
+key=$(az storage account keys list -g $rg -n $storage --query '[0].value' -o tsv)
+
+echo $key
+
+az storage container create \
+  --name $container_uploads \
+  --account-name $storage \
+  --account-key $key
+
+az storage container create \
+  --name $container_processed \
+  --account-name $storage \
+  --account-key $key
+
+
+# Set access level to allow anonymous blob access
+az storage container set-permission \
+  --name $container_uploads \
+  --account-name $storage \
+  --public-access blob
+
+az storage container set-permission \
+  --name $container_processed \
+  --account-name $storage \
+  --public-access blob
+
+
+TMPFILES=tmpfiles
+MYFILE="./${TMPFILES}/bazfile01.txt"
+mkdir -p "${TMPFILES}"
+echo "first line" > "$MYFILE"
+
+
+
+################
+#
+# Upload a file
+#
+MYFILE="./${TMPFILES}/bazfile04.txt"
+az storage blob upload \
+  --account-name $storage \
+  --container-name $container_uploads \
+  --name "${MYFILE##*/}" \
+  --file $MYFILE \
+  --auth-mode key \
+  --account-key $key  --overwrite
+
+################
+#
+# List uploaded blobs
+#
+az storage blob list \
+  --account-name $storage \
+  --container-name $container_uploads \
+  --auth-mode key \
+  --account-key $key \
+  --output table
+
+
+################
+#
+# List processed blobs
+#
+az storage blob list \
+  --account-name $storage \
+  --container-name $container_processed \
+  --auth-mode key \
+  --account-key $key \
+  --output table
+
+
+curl https://bazstorageacc.blob.core.windows.net/bazcontaineruploads/bazfile01.txt
+
+curl https://bazstorageacc.blob.core.windows.net/bazcontainerprocessed/bazfile01.txt
+
+az functionapp create \
+  --resource-group $rg \
+  --consumption-plan-location $location \
+  --os-type Linux \
+  --runtime python \
+  --functions-version 4 \
+  --name $functionapp \
+  --storage-account $storage
+
+
+func init my-function-app --python
+cd my-function-app
+func new --name $bazfunction --template "Blob trigger"
+
+MyFuncApp/
+├── host.json                # Global settings for the Function App
+├── local.settings.json      # Local config (not deployed)
+├── requirements.txt         # Python dependencies
+├── MyFunction/              # One Azure Function
+│   ├── __init__.py          # Your function code
+│   └── function.json        # Trigger/Binding definition
+
+
+
+
+#########################
+#
+# Function App Deployment
+#
+#########################
+
+func azure functionapp publish ${functionapp}
+
+

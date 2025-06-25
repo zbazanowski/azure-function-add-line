@@ -1,0 +1,22 @@
+
+[Client Uploads Image]
+         │
+         ▼
+┌───────────────────────────────┐
+│ Azure Blob Storage            │◄─── Receives image (in `uploads/`)
+└───────────────────────────────┘
+         │
+         ▼
+┌───────────────────────────────┐
+│ Azure Event Grid              │─── Detects blob creation event
+└───────────────────────────────┘
+         │
+         ▼
+┌───────────────────────────────┐
+│ Azure Function (Blob Trigger) │─── Processes image
+└───────────────────────────────┘
+         │
+         ▼
+┌───────────────────────────────┐
+│ Azure Blob Storage            │─── Saves to `processed/`
+└───────────────────────────────┘
