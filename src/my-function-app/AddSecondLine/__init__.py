@@ -23,5 +23,9 @@ def main(myblob: InputStream):
     blob_client = blob_service_client.get_blob_client(container=target_container, blob=target_blob_name)
 
     # Upload modified content
-    blob_client.upload_blob(modified_content, overwrite=True)
-
+    #blob_client.upload_blob(modified_content, overwrite=True)
+    try:
+        blob_client.upload_blob(modified_content, overwrite=True)
+        logging.info(f"Successfully uploaded to {target_container}/{myblob.name}")
+    except Exception as e:
+        logging.error(f"Failed to upload: {e}")
