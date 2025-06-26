@@ -143,3 +143,11 @@ MyFuncApp/
 func azure functionapp publish ${functionapp}
 
 
+az functionapp log  \
+  --name $functionapp \
+  --resource-group $rg
+
+
+az functionapp list --query "[].{hostName: defaultHostName, state: state}" \
+  --resource-group $rg
+
