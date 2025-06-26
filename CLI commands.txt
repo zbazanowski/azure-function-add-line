@@ -151,3 +151,16 @@ az functionapp log  \
 az functionapp list --query "[].{hostName: defaultHostName, state: state}" \
   --resource-group $rg
 
+
+
+
+
+[{
+"name":"workflows",
+"size":0,
+"mtime":"2025-06-26T13:01:37+00:00",
+"crtime":"2025-06-26T13:01:37+00:00",
+"mime":"inode/directory",
+"href":"https://bazfunctionapp.azurewebsites.net/admin/vfs/.github/workflows%2F?relativePath=1&api-version=2022-03-01",
+"path":"/home/site/wwwroot/.github/workflows"
+}]
